@@ -4,8 +4,6 @@
 #' Date: Dec 29 2020
 
 #### 1PT
-# set your working directory
-setwd("______")
 
 # Load the following libraries ggplot2, ggthemes and tm
 library(______)
