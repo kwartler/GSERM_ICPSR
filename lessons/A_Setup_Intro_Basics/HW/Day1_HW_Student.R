@@ -14,7 +14,7 @@ library(______)
 library(stringi)
 
 # load the homework data in an object called `text`
-text <- read.csv("_____________")
+text <- read.csv("https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/A_Setup_Intro_Basics/HW/Dec292020Tweets.csv")
 
 #### 1PT
 # 
