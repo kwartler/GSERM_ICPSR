@@ -77,7 +77,7 @@ barplot(t(charTally), las = 2)
 # Timeline of character appearances
 ggplot(charDF, aes(colour = character)) + 
   geom_segment(aes(x = appearanceSecs, xend = sceneEndSecs,
-                   y = character, yend = character), size = 3) +
+                   y = character, yend = character), linewidth = 3) +
   theme_gdocs() + theme(legend.position = "none")
 #ggsave('~/Desktop/GSERM_ICPSR/personalFiles/somePlot.jpeg')
 

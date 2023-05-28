@@ -1,5 +1,4 @@
-#' Title: Amazon X Ray
-#' Purpose: Explore some X-Ray data
+#' Purpose: Explore some amazon X-Ray data
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
 #' Date: May 27, 2023

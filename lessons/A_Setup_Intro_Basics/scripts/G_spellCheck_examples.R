@@ -59,9 +59,9 @@ for( i in 1:length(allTxt)){
 
 correctedTxt
 
-# Or with mgsub
-mgsub(allTxt, 
-      correctionLexicon$wrong, 
-      correctionLexicon$right)
+# Or with mgsub library
+mgsub::mgsub(allTxt, 
+             correctionLexicon$wrong, 
+             correctionLexicon$right)
 
 # End

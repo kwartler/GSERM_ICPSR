@@ -1,13 +1,11 @@
-#' Title: Text Organization for Bag of Words
 #' Purpose: Learn some basic cleaning functions & term frequency
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: June 13, 2022
+#' Date: May 28, 2023
 #'
 
-# Set the working directory
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/B_Basic_Visuals/data")
+# File path input
+filePath <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/A_Setup_Intro_Basics/data/coffeeVector.csv'
 
 # Libs
 library(tm)
@@ -38,30 +36,18 @@ cleanCorpus<-function(corpus, customStopwords){
 stops <- c(stopwords('english'), 'lol', 'smh')
 
 # Data
-text <- read.csv('coffee.csv', header=TRUE)
+text <- read.csv(filePath)
 
-# As of tm version 0.7-3 tabular was deprecated
-names(text)[1] <- 'doc_id' 
 
 # Make a volatile corpus
-txtCorpus <- VCorpus(DataframeSource(text))
+txtCorpus <- VCorpus(VectorSource(text$x))
 
 # Preprocess the corpus
 txtCorpus <- cleanCorpus(txtCorpus, stops)
 
-# Check Meta Data; brackets matter!!
-txtCorpus[[4]]
-meta(txtCorpus[4])
-content(txtCorpus[[4]])
-
-# Need to plain text cleaned copy?r
-df <- data.frame(text = unlist(sapply(txtCorpus, `[`, "content")),
-                 stringsAsFactors=F)
-#write.csv(df,'plain_coffee.csv',row.names = F)
-
 # Compare a single tweet
-text$text[4]
-df[4,]
+text$x[4]
+content(txtCorpus[[4]])
 
 # Make a Document Term Matrix or Term Document Matrix depending on analysis
 txtDtm  <- DocumentTermMatrix(txtCorpus)
@@ -91,6 +77,6 @@ head(exampleReOrder)
 
 # Which term is the most frequent?
 idx <- which.max(topTermsA$freq)
-topTermsA[idx, ]
+head(topTermsA[idx, ])
 
 # End
