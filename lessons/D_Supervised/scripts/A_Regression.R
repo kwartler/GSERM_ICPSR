@@ -1,38 +1,40 @@
-#' Title: Regression
-#' Purpose: Learn about a regression model
 #' Author: Ted Kwartler
-#' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: Dec 28 2020
-#'
+#' Date: 2-19-2023
+#' Purpose: Build a regression model
+#' 
 
 # libs
 library(ggplot2)
+library(ggthemes)
 library(dplyr)
 
 # Data
-data('diamonds') # No Working Directory needed, ggplot come with the diamonds data
-set.seed(1234)
-
-# This is a simple down-sample, not a partitioning schema.  
-# There is a difference because you could resample and get the same rows. 
-# When you partition you want to ensure no overlap of records.
-sampDiamonds <- sample_n(diamonds, 10000)
+diamonds <- read.csv('https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/D_Supervised/data/diamonds2023.csv')
 
 # EDA
-summary(sampDiamonds)
+summary(diamonds)
 
-# Remember this?
-p <- ggplot(sampDiamonds, aes(carat, price)) +geom_point(alpha=0.02)
+# Let's see if there are outliers
+ggplot(data = diamonds, aes(y=priceClean)) + geom_boxplot() + theme_gdocs()
+
+# Let's drop the outliers in the top demi decile
+quantile(diamonds$priceClean, probs = seq(.1,.95, by = .05))
+dropAmt <- tail(quantile(diamonds$priceClean, probs = seq(.1,.95, by = .05)), 1)
+diamonds <- subset(diamonds, diamonds$priceClean<dropAmt)
+
+# Build a scatter plot to show relationship 
+p <- ggplot(diamonds, aes(Carat, priceClean)) + geom_point(alpha=0.02) + theme_gdocs()
 p
 
 # Since we see a relationship let's make a linear model to predict prices
-fit <- lm(price ~ carat + 0, sampDiamonds)
+fit <- lm(priceClean ~ Carat + 0, diamonds)
 fit
 
 # Add out model predictions
-xBeta <- coefficients(fit)
-p     <- p + geom_abline(intercept =  0, slope = xBeta, color='red')
+p <- p + geom_abline(intercept =  0, 
+                     slope = coefficients(fit), 
+                     color='red') +
+  theme_gdocs()
 p
 
 # End

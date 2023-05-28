@@ -1,9 +1,7 @@
-#' Title: Fully March Madness Revised
 #' Purpose: apply a logistic regression to basketball data
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: Dec 28 2020
+#' Date: May 28, 2023
 #'
 
 # Libs
@@ -12,11 +10,11 @@ library(MLmetrics)
 library(pROC)
 library(ggplot2)
 
-# wd
-setwd("/Users/edwardkwartler/Desktop/GSERM_Text_Remote_admin/lessons/D_Supervised/data")
+# Data location
+filePath <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/D_Supervised/data/ncaa.csv'
 
 # Data
-bball <- read.csv('ncaa.csv')
+bball <- read.csv(filePath)
 
 # Idenfity the informative and target
 names(bball)
@@ -40,13 +38,12 @@ fit <- glm(R1.Class.1.win ~., data = treatedX, family ='binomial')
 summary(fit)
 
 # Backward Variable selection to reduce chances of multi-colinearity
-# Takes 2m  to run so load a pre-saved copy that I already made 
-#bestFit <- step(fit, direction='backward')
-#saveRDS(bestFit, 'bestFitNCAA.rds')
-bestFit <-readRDS('bestFitNCAA.rds')
+# AIC low is better!
+# Balance the trade-off between how well the model fits the data and how many inputs are needed
+bestFit <- step(fit, direction='backward')
 summary(bestFit)
 
-# Compare model size
+# Compare model size - parsimony!
 length(coefficients(fit))
 length(coefficients(bestFit))
 
@@ -67,7 +64,8 @@ results <- data.frame(Name                = bball$Name,
 head(results,12)
 
 # Get a confusion matrix
-(confMat <- ConfusionMatrix(results$ModelClassification, results$actual))
+confMat <- ConfusionMatrix(results$ModelClassification, results$actual)
+confMat
 
 # What is the accuracy?
 sum(diag(confMat)) / sum(confMat)
