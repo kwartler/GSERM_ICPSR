@@ -2,8 +2,7 @@
 #' Purpose: Learn some basic functions
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: June 13, 2022
+#' Date: May 27, 2023
 #'
 
 ## Simple math operators
@@ -33,10 +32,10 @@ yale      <- FALSE
 princeton <- F
 
 # Factor variables
-ted    <- as.factor('MALE')
+fakeFactor    <- as.factor(c('MALE','MALE','FEMALE'))
 
 #Examine
-ted
+fakeFactor
 
 # String (plain text) variables
 emily  <- 'She is a friend.'
@@ -79,7 +78,8 @@ vectorA - vectorB # Vector operation AND auto-change TRUE =1, FALSE=0
 ## Construct a data frame; think of as an excel worksheet
 dataDF <- data.frame(numberVec    = vectorA,
                      trueFalseVec = vectorB,
-                     stringsVec   = vectorC)
+                     stringsVec   = vectorC,
+                     row.names = NULL)
 
 # Examine an entire data frame (different than a matrix class, more to come on that)
 dataDF
@@ -103,10 +103,11 @@ dataDF[1,2] #by index row 1, column 2
 
 ## Extract from R to a file; object to save then path, otherwise will go to working directory (fruit basket)
 # Windows slashes are backwards!
-write.csv(dataDF,"example.csv", row.names=F) 
+savePath <- '~/Desktop/GSERM_ICPSR/personalFiles/example.csv'
+write.csv(dataDF,savePath, row.names=F) 
 
 ## Read in a file as an object; just path
-newDF<-read.csv("example.csv") 
+newDF<-read.csv("~/Desktop/GSERM_ICPSR/personalFiles/example.csv") 
 
 # Examine & Compare to original
 newDF
@@ -123,7 +124,8 @@ table(vec1)
 barplot(table(vec1))
 
 # Save a plot to disk programatically
-jpeg('example.jpg') # open up a background graphics device, declare path and file name
+# open up a background graphics device, declare path and file name
+jpeg('~/Desktop/GSERM_ICPSR/personalFiles/example.jpg') 
 barplot(table(vec1)) # plot it
 dev.off() # turn off the background graphics device
 
