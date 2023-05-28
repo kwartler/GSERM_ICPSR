@@ -2,12 +2,22 @@
 #' Purpose: Explore some X-Ray data
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: June 10, 2021
+#' Date: May 27, 2023
 #'
 
-### 1. Set working directory to your specific movie
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/A_Setup_Intro_Basics/data")
+### 1. Set the path to our data
+# Force Awakens
+# 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/A_Setup_Intro_Basics/data/forceAwakens_definedScenes.csv'
+
+# Lego Movie
+# 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/A_Setup_Intro_Basics/data/lego_definedScenes.csv'
+
+# Mary Poppins
+# https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/A_Setup_Intro_Basics/data/poppins_definedScenes.csv
+
+# URL to the file
+movieURL <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/A_Setup_Intro_Basics/data/lego_definedScenes.csv'
+
 
 # Turn off scientific notation
 options(scipen = 999)
@@ -18,7 +28,7 @@ library(ggthemes)
 
 ### 3. Read in data
 # Use the read.csv function for your specific definedScenes.csv file
-scenesDF   <- read.csv('lego_definedScenes.csv')
+scenesDF   <- read.csv(movieURL)
 
 ### 4. Apply functions to clean up data & get insights/analysis
 # Use the names function to review the names of scenesDF
@@ -62,13 +72,24 @@ scenesDF[maximumLength,]
 unique(scenesDF$name)
 scenesDF$name <- stringi::stri_encode(scenesDF$name, "", "UTF-8")
 
+# Create a variable to name your movie
+# 'Mary Poppins' 'Star Wars' 'Lego Movie' 
+movieTitle <- 'Lego Movie' 
+
+# Apply a logical operator
+plotDF <- switch(movieTitle,
+                 'Mary Poppins' = scenesDF,
+                 'Star Wars'    = scenesDF[1:38,],
+                 'Lego Movie'   = scenesDF[1:15,])
+
 ################ BACK TO PPT FOR EXPLANATION ##################
-ggplot(scenesDF, aes(colour = name)) + 
+ggplot(plotDF, aes(colour = name)) + 
   geom_segment(aes(x = start, xend = end,
-                   y = id,    yend = id), size = 3) +
-  geom_text(data=scenesDF, aes(x = end, y = id, label = name), 
+                   y = id,    yend = id), linewidth = 3) +
+  geom_text(data=plotDF, aes(x = end, y = id, label = name), 
             size = 2.25, color = 'black', alpha = 0.5, check_overlap = TRUE) +
-  theme_gdocs() + theme(legend.position = "none")
+  theme_gdocs() + theme(legend.position = "none") +
+  ggtitle(movieTitle)
 
 # End
 
