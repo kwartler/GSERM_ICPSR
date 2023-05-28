@@ -1,20 +1,15 @@
-#' Title: R Sting Basics Stringi & Stringr
 #' Purpose: Explore a bunch of functions from the most common string manipulations packages
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: Jan 9, 2022
+#' Date: May 28, 2023
 #' 
-
-# Wd
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/A_Setup_Intro_Basics/data")
 
 # library
 library(stringi)
 library(stringr)
 
 # Suppose these two sentances were two huge pieces of text
-txt  <- '<b>THIS IS ALL CAPS</b> <br>'
+txt  <- '<b>THIS IS SOME TEXT</b> <br>'
 txt2 <- 'this is not in caps          '
 txt3 <- 'this is NOT a long sentence is it?'
 

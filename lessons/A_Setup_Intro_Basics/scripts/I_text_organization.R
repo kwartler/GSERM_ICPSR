@@ -1,16 +1,15 @@
-#' Title: Text Organization for Bag of Words
 #' Purpose: Learn some basic cleaning functions & term frequency
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
 #' License: GPL>=3
-#' Date: Jan 9, 2022
+#' Date: May 28, 2023
 #'
-
-# Set the working directory
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/A_Setup_Intro_Basics/data")
 
 # Libs
 library(tm)
+
+# Get the data path
+filePath <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/A_Setup_Intro_Basics/data/coffeeVector.csv'
 
 # Options & Functions
 options(stringsAsFactors = FALSE)
@@ -41,67 +40,63 @@ cleanCorpus<-function(corpus, customStopwords){
 stops <- c(stopwords('english'), 'lol', 'smh', 'GSERM')
 
 # Data
-text <- read.csv('coffee.csv', header=TRUE)
-#View(text)
-
-# As of tm version 0.7-3 tabular was deprecated
-names(text)[1] <- 'doc_id' #first 2 columns must be 'doc_id' & 'text'
+text <- read.csv(filePath)
+head(text)
 
 # Make a volatile corpus
-txtCorpus <- VCorpus(DataframeSource(text))
+# DataframeSource captures meta data (other columns like author and date) but requires doc_id as the 1st column
+txtCorpus <- VCorpus(VectorSource(text$x))
 
 # Preprocess the corpus
 txtCorpus <- cleanCorpus(txtCorpus, stops)
 
-# Check Meta Data; brackets matter!!
-txtCorpus[[4]]
-meta(txtCorpus[[4]]) #double [[...]]
-t(meta(txtCorpus[4])) #single [...]
-
-content(txtCorpus[4]) #single [...]
-content(txtCorpus[[4]]) #double [...]
-
-# Need to plain text cleaned copy? Saves time on large corpora
+# When you have a lot of text cleaning takes a long time.
+# You can extract and save the cleaned text with content()
+# This method lets you column bind the meta columns if you need too
 df <- data.frame(text = unlist(sapply(txtCorpus, `[`, "content")),
                  stringsAsFactors=F)
 
-# Or use lapply
-cleanText <- lapply(txtCorpus, content)
-cleanText <- do.call(rbind, cleanText)
-
-# Or use sapply
+# Sapply will let you get the clean vector only for saving if you have no meta information
 cleanVector <- sapply(txtCorpus, content)
 
 # Compare a single tweet
-text$text[4]
+text$x[4]
 df[4,]
-cleanText[4]
 cleanVector[4]
 
-# Make a Document Term Matrix or Term Document Matrix depending on analysis
+## YOu only need to make one of these since they are the same data!
+# Make a Document Term Matrix 
 txtDtm  <- DocumentTermMatrix(txtCorpus)
-txtTdm  <- TermDocumentMatrix(txtCorpus)
 txtDtmM <- as.matrix(txtDtm)
+
+# Make a Term Document Matrix
+txtTdm  <- TermDocumentMatrix(txtCorpus)
 txtTdmM <- as.matrix(txtTdm)
 
+# If you have a lot of data you may not want to make them inefficient "simple matrices" with as.matrix()
+# DocumentTermMatrix & TermDocumentMatrix are "simple_triplet_matrix" objects so you can work with 
+# large data using library(slam) functions
+
 # Examine
-txtDtmM[610:611,491:493]
-txtTdmM[491:493,610:611]
+# Find the mug
+idx <- grep('mug', colnames(txtDtmM))
+txtDtmM[1:4,idx]
+txtTdmM[idx,1:4]
 
 
 #### Go back to PPT ####
 
 # Get the most frequent terms
 topTermsA <- colSums(txtDtmM)
-topTermsB <- rowSums(txtTdmM)
 
 # Add the terms
 topTermsA <- data.frame(terms = colnames(txtDtmM), freq = topTermsA, row.names = NULL)
-topTermsB <- data.frame(terms = rownames(txtTdmM), freq = topTermsB, row.names = NULL)
 
 # Review
 head(topTermsA)
 head(topTermsB)
+topTermsB <- data.frame(terms = rownames(txtTdmM), freq = topTermsB, row.names = NULL)
+topTermsB <- rowSums(txtTdmM)
 
 # Which term is the most frequent?
 idx <- which.max(topTermsA$freq)

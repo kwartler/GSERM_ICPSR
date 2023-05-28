@@ -1,13 +1,11 @@
-#' Title: Spell Check Examples
 #' Purpose: Run through basic spell checking of text
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: June 10, 2021
+#' Date: May 28, 2023
 #'
 
 # Libs
-#library(qdap) #pg 45 in book has another option but may crash cloud instance
+#library(qdap) #pg 45 in book has another option 
 library(spelling)
 library(hunspell)
 library(mgsub)
