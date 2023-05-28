@@ -5,7 +5,8 @@
 #' Date: May 28, 2023
 
 # Data Folder
-list.dirs(path = '~/Desktop/GSERM_ICPSR/lessons/D_Supervised/data/AutoAndElectronics')
+folderPaths <- list.dirs(path = '~/Desktop/GSERM_ICPSR/lessons/D_Supervised/data/AutoAndElectronics')
+savePath <- '~/Desktop/GSERM_ICPSR/lessons/D_Supervised/data/'
 
 # Libs
 library(tm)
@@ -13,8 +14,25 @@ library(lsa)
 library(yardstick)
 library(ggplot2)
 
-# Bring in our supporting functions
-source('~/Desktop/GSERM_Text_Remote_student/student_lessons/Z_otherScripts/ZZZ_supportingFunctions.R')
+# Custom helper functions
+tryTolower <- function(x){
+  y = NA
+  try_error = tryCatch(tolower(x), error = function(e) e)
+  if (!inherits(try_error, 'error'))
+    y = tolower(x)
+  return(y)
+}
+
+cleanCorpus<-function(corpus, customStopwords){
+  corpus <- tm_map(corpus, content_transformer(qdapRegex::rm_url))
+  corpus <- tm_map(corpus, removeNumbers)
+  corpus <- tm_map(corpus, removePunctuation)
+  corpus <- tm_map(corpus, stripWhitespace)
+  corpus <- tm_map(corpus, content_transformer(tryTolower))
+  corpus <- tm_map(corpus, removeWords, customStopwords)
+  return(corpus)
+}
+
 
 # Options & Functions
 options(stringsAsFactors = FALSE, scipen = 999)
@@ -24,15 +42,17 @@ Sys.setlocale('LC_ALL','C')
 stops <- c(stopwords('SMART'), 'car', 'electronic')
 
 # Bring in some data
-carCorp <- VCorpus(DirSource("rec.autos"))
-electronicCorp <- VCorpus(DirSource("sci.electronics"))
+carCorp <- VCorpus(DirSource(folderPaths[2]))
+electronicCorp <- VCorpus(DirSource(folderPaths[3]))
 
 # Clean each one
 carCorp        <- cleanCorpus(carCorp, stops)
 electronicCorp <- cleanCorpus(electronicCorp, stops)
 
-# Combine
+# Combine the corpora
 allPosts <-  c(carCorp,electronicCorp)
+
+# Remove objects we don't need cluttering up the RAM (for students with small computers)
 rm(carCorp)
 rm(electronicCorp)
 gc()
@@ -48,8 +68,8 @@ allTDM
 # Get 20 latent topics
 ##### Takes awhile, may crash small RAM computers, so saved a copy
 #lsaTDM <- lsa(allTDM, 20)
-#saveRDS(lsaTDM, '~/Desktop/GSERM_Text_Remote_student/student_lessons/D_Supervised/data/lsaTDM_tfidf_June152022.rds') #be sure to declare the right wd!
-lsaTDM <- readRDS('~/Desktop/GSERM_Text_Remote_student/student_lessons/D_Supervised/data/lsaTDM_tfidf_June152022.rds')
+#saveRDS(lsaTDM, paste0(savePath, Sys.Date(),'_lsaTDM_tfidf_.rds'))#be sure to declare the right wd!
+lsaTDM <- readRDS(paste0(savePath, Sys.Date(),'_lsaTDM_tfidf_.rds'))
 
 # Extract the document LSA values
 docVectors <- as.data.frame(lsaTDM$dk)
@@ -78,7 +98,6 @@ head(predValidation)
 # Simple Accuracy Eval
 yHat <- ifelse(predValidation >= 0.5,1,0)
 (confMat <- table(yHat, validation$yTarget))
-summary(conf_mat(confMat))
 autoplot(conf_mat(confMat))
 
 # End

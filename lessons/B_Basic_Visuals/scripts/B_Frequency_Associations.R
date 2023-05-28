@@ -17,6 +17,7 @@ library(ggthemes)
 options(stringsAsFactors = FALSE)
 Sys.setlocale('LC_ALL','C')
 
+# Custom helper functions
 tryTolower <- function(x){
   y = NA
   try_error = tryCatch(tolower(x), error = function(e) e)

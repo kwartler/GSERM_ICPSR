@@ -1,10 +1,3 @@
-#' Title: Day 4 Homework
-#' Purpose: Build an elastic net classifer & LSA classifier; evaluate both 
-#' Author: Ted Kwartler
-#' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: Dec 28 2020
-#' 
 
 ## Your script header should be the following:
 #' Title: GSERM REMOTE DAY 3 HW
@@ -16,7 +9,7 @@
 
 # 1. Set the working directory
 
-# 2. Bring in your custom functions "ZZZ_supportingFunctions.R"
+# 2. Add your helper functions
 
 # 3. Set options, scipen =999 strings as stringsAsFactors = F
 
@@ -56,17 +49,10 @@ textFit <- cv.glmnet(training,
                      nfolds       = 5,
                      intercept    = F)
 
-# 13. Model Term exploration code...Subset to the largest impacting terms in our model.  You will want to examine this with both alphas to see the impact of bias
+# 13. Model Term Coefficient exploration code...Subset to the  non 0 terms in our model.  Examine the results for the top 10 and bottom 10 coeeficients (see class script)
 bestTerms <- subset(as.matrix(coefficients(textFit)), 
                     as.matrix(coefficients(textFit)) !=0)
-bestTerms <- data.frame(term   = rownames(bestTerms),
-                        impact = bestTerms)
-bestTerms <- bestTerms[order(bestTerms[,2], decreasing = T),]
 
-# 13. continued...Examine the top 25 bestTerms
-head(_________,25)
-
-# 13. continued...Examine the bottom 25 bestTerms
 
 # Compare the terms in the model to the column in the training set
 nrow(_______)

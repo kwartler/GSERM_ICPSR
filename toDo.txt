@@ -5,3 +5,6 @@ To Do
 3. Remove qdap?!but keep qdapRegex
 4. update package install on the readme
 5. email the class
+6. Add a live code to Weds?
+7. Add a live code for Thursday from https://cran.r-project.org/web/packages/finreportr/finreportr.pdf
+8. Check the homeworks
