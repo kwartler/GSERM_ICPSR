@@ -40,11 +40,6 @@ cleanCorpus<-function(corpus, customStopwords){
   return(corpus)
 }
 
-
-# Options & Functions
-options(stringsAsFactors = FALSE)
-Sys.setlocale('LC_ALL','C')
-
 # Create custom stop words
 stops <- c(stopwords('SMART'), 'amp', 'britishairways', 
            'british', 'flight', 'flights', 'airways', 

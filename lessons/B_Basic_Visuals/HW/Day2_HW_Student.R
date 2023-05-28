@@ -4,8 +4,8 @@
 #' Date: Dec 29 2020
 
 #### 5PTs
-# set your working directory
-setwd("________")
+# Data Path
+filePath <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/B_Basic_Visuals/HW/beer.csv'
 
 # Load the following libraries ggplot2, ggthemes, tm & wordcloud
 library(________)
@@ -18,7 +18,7 @@ options(stringsAsFactors = FALSE)
 Sys.setlocale('LC_ALL','C')
 
 # load the homework data, beer.csv, in an object called `text`
-text <- read.csv("______")
+text <- read.csv(filePath)
 
 # Standard tryTolower, just leave it alone
 tryTolower <- function(x){
