@@ -1,13 +1,11 @@
-#' Title: Elastic Net Example Ensemble 
 #' Purpose: Mix data types to improve a model
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: June 16 2021
+#' Date: May 28, 2023
 #'
 
-# Wd
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/D_Supervised/data")
+# Data Path
+filePath <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/D_Supervised/data/diabetes_subset_8500.csv'
 
 # Libs
 library(text2vec)
@@ -26,7 +24,7 @@ diagnosisClean<-function(xVec){
 }
 
 # Read
-diabetes <- read.csv('diabetes_subset_8500.csv')
+diabetes <- read.csv(filePath)
 
 # Concantenate texts in 3 columns
 diabetes$diagnosisText <- as.character(paste(diabetes$diag_1_desc,
@@ -44,7 +42,6 @@ head(trainDiabetesTxt$diagnosisText,2)
 table(trainDiabetesTxt$readmitted)
 
 ### MODIFY
-# 
 trainDiabetesTxt$diagnosisText <- diagnosisClean(trainDiabetesTxt$diagnosisText)
 
 # Initial iterator to make vocabulary
@@ -85,15 +82,8 @@ textFit <- cv.glmnet(diabetesDTM,
                     intercept=F)
 
 
-# Examine
+# Examine - lots of terms thrown out!
 head(coefficients(textFit),10)
-
-# Subset to impacting terms
-bestTerms <- subset(as.matrix(coefficients(textFit)), 
-                    as.matrix(coefficients(textFit)) !=0)
-head(bestTerms)
-nrow(bestTerms)
-ncol(diabetesDTM)
 
 # Fit without text
 noText    <- as.matrix(trainDiabetesTxt[,1:132])
@@ -105,6 +95,7 @@ noTextFit <- cv.glmnet(noText,
                        nfolds=5, 
                        intercept=F)
 
+# Fit with text and the other data
 allFit <- cv.glmnet(cbind(diabetesDTM, noText),
                     y=as.factor(trainDiabetesTxt$readmitted),
                     alpha=0.9,
@@ -122,36 +113,44 @@ title("GLMNET No Text")
 plot(allFit)
 title("GLMNET All Info")
 
-#compare AUC
+# Let's get training predictions for each model
 textPreds   <-as.logical(predict(textFit,
                                  diabetesDTM,
                                  type = 'class',
                                  s    = textFit$lambda.min))
-textROC     <- roc((trainDiabetesTxt$readmitted*1), textPreds*1)
-
 noTextPreds <- as.logical(predict(noTextFit,
                                   as.matrix(trainDiabetesTxt[,1:132]),
                                   type = 'class',
                                   s    = noTextFit$lambda.min))
-noTextROC   <- roc((trainDiabetesTxt$readmitted*1), noTextPreds*1)
+
 
 allPreds    <- as.logical(predict(allFit,cbind(diabetesDTM,
                                                as.matrix(trainDiabetesTxt[,1:132])),
                                   type = 'class',
                                   s    = allFit$lambda.min))
-allROC<-roc((trainDiabetesTxt$readmitted*1), allPreds*1)
+
+MLmetrics::Accuracy(textPreds,trainDiabetesTxt$readmitted*1 )
+MLmetrics::Accuracy(noTextPreds,trainDiabetesTxt$readmitted*1)
+MLmetrics::Accuracy(allPreds, trainDiabetesTxt$readmitted*1)
+
+### Go to PPTX
+
+#compare AUC
+textROC     <- roc((trainDiabetesTxt$readmitted*1), textPreds*1)
+noTextROC   <- roc((trainDiabetesTxt$readmitted*1), noTextPreds*1)
+allROC      <- roc((trainDiabetesTxt$readmitted*1), allPreds*1)
 
 plot(textROC,col="blue",main="BLUE = Text, RED = No Text, GREEN=All",adj=0)
 plot(noTextROC, add=TRUE,col="red", lty=2)
 plot(allROC,add=TRUE,col="darkgreen", lty=3)
 
-### Apply to new patients requires the construction of the new patient DTM exaclty as the training set
+### Apply to new patients requires the construction of the new patient DTM exactly as the training set
 testIT   <- itoken(testDiabetesTxt$diagnosisText, 
                    tokenizer = word_tokenizer)
 
 # Use the same vectorizer but with new iterator
 testDTM <-create_dtm(testIT,vectorizer)
-# not needed but you can xfer a tfidf too: testDTMtfidf <- transform_tfidf(testDTM, idf)
+# not needed here but you can xfer a tfidf too: testDTMtfidf <- transform_tfidf(testDTM, idf)
 
 # Append the DTM to the test patient data
 newPatients <- cbind(testDTM, as.matrix(testDiabetesTxt[,1:132]))
@@ -162,8 +161,8 @@ testPreds   <- predict(allFit,
                        s    = allFit$lambda.min) #cv$lambda.1se;lambda.min
 
 # Confusion Matrix
-(confMat <- table(testPreds, testDiabetesTxt$readmitted))
-
+confMat <- table(testPreds, testDiabetesTxt$readmitted)
+confMat
 # Accuracy
 sum(diag(confMat))/sum(confMat)
 

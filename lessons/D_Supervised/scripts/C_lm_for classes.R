@@ -1,7 +1,7 @@
 #' Purpose: Why doesn't LM work for binary classification?
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' Date: Dec 28 2020
+#' Date: May 28 2023
 #'
 
 # libs

@@ -1,14 +1,11 @@
-#' Title: Elastic net example
 #' Purpose: Build an elastic net for classification 
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: Dec 28 2020
+#' Date: May 28, 2023
 #'
 
-
-# Wd
-setwd("/Users/edwardkwartler/Desktop/GSERM_Text_Remote_admin/lessons/D_Supervised/data")
+# Data Path
+filePath <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/D_Supervised/data/diabetes_subset_8500.csv'
 
 # Libs
 library(text2vec)
@@ -25,14 +22,14 @@ diagnosisClean<-function(xVec){
 }
 
 # Read
-diabetes <- read.csv('diabetes_subset_8500.csv')
+diabetes <- read.csv(filePath)
 
 # Concantenate texts in 3 columns
 diabetes$diagnosisText <- as.character(paste(diabetes$diag_1_desc,
                                              diabetes$diag_2_desc,
                                              diabetes$diag_3_desc, sep=' '))
 
-### SAMPLE : Patritioning
+### SAMPLE : Partitioning
 idx              <- createDataPartition(diabetes$readmitted,p=.7,list=F)
 trainDiabetesTxt <- diabetes[idx,]
 testDiabetesTxt  <- diabetes[-idx,]
@@ -86,16 +83,47 @@ textFit <- cv.glmnet(diabetesDTM,
 
 # Examine
 head(coefficients(textFit),10)
+plot(textFit)  # high enough penalty the AUC (area under the curve, similar to accuracy) plummets
 
-# Subset to impacting terms
-bestTerms <- subset(as.matrix(coefficients(textFit)), 
-                    as.matrix(coefficients(textFit)) !=0)
-head(bestTerms)
+# Subset to terms with coefficients assigned
+bestTerms <- as.data.frame(subset(as.matrix(coefficients(textFit)), 
+                    as.matrix(coefficients(textFit)) !=0))
+bestTerms$terms <- rownames(bestTerms)
+
+# Review the penalty impact
 nrow(bestTerms)
 ncol(diabetesDTM)
+
+# What are some impacting terms
+head(bestTerms[order(bestTerms$s1, decreasing = T),])
+head(bestTerms[order(bestTerms$s1, decreasing = F),])
 
 # Make training predictions
 trainingPreds <- predict(textFit, diabetesDTM, type = 'class')
 confusionMatrix(as.factor(trainingPreds),
                 as.factor(trainDiabetesTxt$readmitted))
+
+## Check the pptx for evaluating new data
+
+### Apply to new patients requires the construction of the new patient DTM exactly as the training set
+testPatients   <- itoken(testDiabetesTxt$diagnosisText, 
+                   tokenizer = word_tokenizer)
+
+# Use the same vectorizer but with new iterator (vocabulary from the new unseen rows)
+testDTM <-create_dtm(testPatients,vectorizer)
+dim(testDTM)
+
+# Score the unseen data 
+testPreds   <- predict(textFit,
+                       testDTM,
+                       type = 'class',
+                       s    = textFit$lambda.min) #cv$lambda.1se;lambda.min
+
+# Confusion Matrix
+confMatTest <- table(testPreds, testDiabetesTxt$readmitted)
+confMatTest
+
+# Accuracy
+sum(diag(confMatTest))/sum(confMatTest)
+
 # End
