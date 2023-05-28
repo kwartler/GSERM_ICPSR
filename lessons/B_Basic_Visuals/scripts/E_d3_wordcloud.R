@@ -1,19 +1,18 @@
-#' Title: D3 Word cloud
 #' Purpose: Make a d3 wordcloud webpage
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: June 13, 2022
+#' Date: May 28, 2023
 #'
 
-# Set the working directory
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/B_Basic_Visuals/data")
+# Declare the data path
+filePath  <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/B_Basic_Visuals/data/chardonnay.csv'
 
 # Libs
 library(tm)
 library(qdap)
 library(wordcloud2)
 library(RColorBrewer)
+library(echarts4r)
 
 # Options & Functions
 options(stringsAsFactors = FALSE)
@@ -29,7 +28,6 @@ tryTolower <- function(x){
 
 cleanCorpus<-function(corpus, customStopwords){
   corpus <- tm_map(corpus, content_transformer(qdapRegex::rm_url))
-  #corpus <- tm_map(corpus, content_transformer(replace_contraction)) 
   corpus <- tm_map(corpus, removeNumbers)
   corpus <- tm_map(corpus, removePunctuation)
   corpus <- tm_map(corpus, stripWhitespace)
@@ -48,13 +46,10 @@ bigramTokens <-function(x){
 }
 
 # Data
-text <- read.csv('chardonnay.csv', header=TRUE)
-
-# As of tm version 0.7-3 tabular was deprecated
-names(text)[1]<-'doc_id' 
+text <- read.csv(filePath, header=TRUE)
 
 # Make a volatile corpus
-txtCorpus <- VCorpus(DataframeSource(text))
+txtCorpus <- VCorpus(VectorSource(text$text))
 
 # Preprocess the corpus
 txtCorpus <- cleanCorpus(txtCorpus, stops)
@@ -89,10 +84,20 @@ wordcloud2(wineDF[1:50,],
            color = "blue",
            backgroundColor = "pink")
 
-# Lettercloud and file mask functions do not work w/Chrome therefore not covered.The package is basically orphaned at this point :(
-# https://github.com/Lchiffon/wordcloud2/issues/12
-#letterCloud(wineDF, word = "wine", wordSize = 1)
-#figPath = system.file("examples/t.png",package = "wordcloud2")
-#wordcloud2(wineDF, figPath = figPath, size = 1.5,color = "skyblue")
+# Now let's use a more up to date package echarts4r
+wineDF[1:50,] %>% 
+  e_color_range(freq, color, colors = c("tomato", "goldenrod")) %>% # Append the column name color, with the colors hex codes
+  e_charts() %>% 
+  e_cloud(
+    word = word, 
+    freq = freq, 
+    color = color, 
+    shape = "circle",
+    rotationRange = c(0, 0),
+    sizeRange = c(15, 100)
+  ) %>% 
+  e_tooltip() %>% 
+  e_title("Chardonnay")
+
 
 # End

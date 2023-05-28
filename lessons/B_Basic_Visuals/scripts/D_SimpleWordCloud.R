@@ -1,19 +1,18 @@
-#' Title: Simple Word Cloud
-#' Purpose: Build a word cloud with bi-grams
+#' Purpose: Build a simple word cloud with bi-grams
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: June 13, 2022
+#' Date: May 23, 2023
 #'
 
-# Set the working directory
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/B_Basic_Visuals/data")
+# Declare the data path
+filePath  <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/B_Basic_Visuals/data/chardonnay.csv'
 
 # Libs
 library(tm)
 library(qdap) # Comment out if you have qdap problems
 library(wordcloud)
 library(RColorBrewer)
+library(ggwordcloud)
 
 # Options & Functions
 options(stringsAsFactors = FALSE)
@@ -29,7 +28,6 @@ tryTolower <- function(x){
 
 cleanCorpus<-function(corpus, customStopwords){
   corpus <- tm_map(corpus, content_transformer(qdapRegex::rm_url))
-  #corpus <- tm_map(corpus, content_transformer(replace_contraction)) 
   corpus <- tm_map(corpus, removeNumbers)
   corpus <- tm_map(corpus, removePunctuation)
   corpus <- tm_map(corpus, stripWhitespace)
@@ -48,13 +46,10 @@ bigramTokens <-function(x){
 }
 
 # Data
-text <- read.csv('chardonnay.csv', header=TRUE)
-
-# As of tm version 0.7-3 tabular was deprecated
-names(text)[1] <-'doc_id' 
+text <- read.csv(filePath, header=TRUE)
 
 # Make a volatile corpus
-txtCorpus <- VCorpus(DataframeSource(text))
+txtCorpus <- VCorpus(VectorSource(text$text))
 
 # Preprocess the corpus
 txtCorpus <- cleanCorpus(txtCorpus, stops)
@@ -88,5 +83,18 @@ wordcloud(wineDF$word,
           random.order = FALSE,
           colors       = pal,
           scale        = c(2,1))
+
+# More common ggplot interface, Single Color
+ggplot(plotDF, aes(label = word, size = freq, color = 'red')) +
+  geom_text_wordcloud() +
+  theme_minimal() 
+
+
+# More common ggplot interface, scale continuous colors
+plotDF <- wineDF[1:100,]
+ggplot(plotDF, aes(label = word, size = freq, color = freq)) +
+  geom_text_wordcloud() +
+  theme_minimal() +
+  scale_color_gradient(low = "black", high = "red") #scale_color_gradient2(low = 'grey',high='black') will make it a spectrum
 
 # End

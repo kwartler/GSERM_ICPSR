@@ -1,13 +1,16 @@
-#' Title: Comparison Cloud
 #' Purpose: Given two corpora find disjoint words and visualize
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: June 13, 2022
+#' Date: May 28, 2023
 #'
 
-# Set the working directory
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/B_Basic_Visuals/data")
+# Data Input, locally you can use list.files()
+chardonnay <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/B_Basic_Visuals/data/chardonnay.csv'
+coffee     <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/B_Basic_Visuals/data/coffee.csv'
+txtFiles <- c(chardonnay, coffee)
+
+# Topic names
+topicNames <- c('chardonnay','coffee')
 
 # Options
 options(scipen = 999)
@@ -33,7 +36,6 @@ tryTolower <- function(x){
 
 cleanCorpus<-function(corpus, customStopwords){
   corpus <- tm_map(corpus, content_transformer(qdapRegex::rm_url))
-  #corpus <- tm_map(corpus, content_transformer(replace_contraction)) 
   corpus <- tm_map(corpus, removeNumbers)
   corpus <- tm_map(corpus, removePunctuation)
   corpus <- tm_map(corpus, stripWhitespace)
@@ -43,41 +45,33 @@ cleanCorpus<-function(corpus, customStopwords){
 }
 
 # Create custom stop words
-stops <- c(stopwords('english'), 'lol', 'amp', 'chardonnay', 'beer')
+stops <- c(stopwords('english'), 'lol', 'amp', 'chardonnay', 'coffee')
 
-# Read in multiple files as individuals
-txtFiles <- list.files(pattern = 'beer|chardonnay')
-
+# Read in the files
 for (i in 1:length(txtFiles)){
-  assign(txtFiles[i], read.csv(txtFiles[i]))
+  assign(topicNames[i], read.csv(txtFiles[i]))
   cat(paste('read completed:',txtFiles[i],'\n'))
 }
 
+
 # Vector Corpus; omit the meta data
-beer       <- VCorpus(VectorSource(beer.csv$text))
-chardonnay <- VCorpus(VectorSource(chardonnay.csv$text))
+coffee       <- VCorpus(VectorSource(coffee$text))
+chardonnay <- VCorpus(VectorSource(chardonnay$text))
 
 # Clean up the data
-beer       <- cleanCorpus(beer, stops)
+coffee       <- cleanCorpus(coffee, stops)
 chardonnay <- cleanCorpus(chardonnay, stops)
 
 # Another way to extract the cleaned text 
-beer       <- unlist(pblapply(beer, content))
+coffee       <- unlist(pblapply(coffee, content))
 chardonnay <- unlist(pblapply(chardonnay, content))
 
-# FYI
-length(beer)
-
 # Instead of 1000 individual documents, collapse each into a single "subject" ie a single document
-beer       <- paste(beer, collapse = ' ')
+coffee       <- paste(coffee, collapse = ' ')
 chardonnay <- paste(chardonnay, collapse = ' ')
 
-# FYI pt2
-length(beer)
-head(beer)
-
 # Combine the subject documents into a corpus of *2* documents
-allDrinks <- c(beer, chardonnay)
+allDrinks <- c(coffee, chardonnay)
 allDrinks <- VCorpus((VectorSource(allDrinks)))
 
 # Make TDM with a different control parameter
@@ -88,7 +82,7 @@ drinkTDM  <- TermDocumentMatrix(allDrinks, control = ctrl)
 drinkTDMm <- as.matrix(drinkTDM)
 
 # Make sure order is the same as the c(objA, objB) on line ~80
-colnames(drinkTDMm) <- c('beer', 'chardonnay')
+colnames(drinkTDMm) <- topicNames
 
 # Examine
 head(drinkTDMm)

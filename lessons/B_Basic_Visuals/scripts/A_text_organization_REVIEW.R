@@ -38,7 +38,6 @@ stops <- c(stopwords('english'), 'lol', 'smh')
 # Data
 text <- read.csv(filePath)
 
-
 # Make a volatile corpus
 txtCorpus <- VCorpus(VectorSource(text$x))
 
@@ -77,6 +76,6 @@ head(exampleReOrder)
 
 # Which term is the most frequent?
 idx <- which.max(topTermsA$freq)
-head(topTermsA[idx, ])
+topTermsA[idx, ]
 
 # End

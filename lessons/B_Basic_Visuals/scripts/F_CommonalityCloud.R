@@ -6,8 +6,13 @@
 #' Date: June 13, 2022
 #'
 
-# Set the working directory
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/B_Basic_Visuals/data")
+# Data Input, locally you can use list.files()
+chardonnay <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/B_Basic_Visuals/data/chardonnay.csv'
+coffee     <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/B_Basic_Visuals/data/coffee.csv'
+txtFiles <- c(chardonnay, coffee)
+
+# Topic names
+topicNames <- c('chardonnay','coffee')
 
 # Libs
 library(tm)
@@ -30,7 +35,6 @@ tryTolower <- function(x){
 
 cleanCorpus<-function(corpus, customStopwords){
   corpus <- tm_map(corpus, content_transformer(qdapRegex::rm_url))
-  corpus <- tm_map(corpus, content_transformer(replace_contraction)) 
   corpus <- tm_map(corpus, removeNumbers)
   corpus <- tm_map(corpus, removePunctuation)
   corpus <- tm_map(corpus, stripWhitespace)
@@ -42,17 +46,15 @@ cleanCorpus<-function(corpus, customStopwords){
 # Create custom stop words
 stops <- c(stopwords('english'), 'lol', 'amp', 'chardonnay', 'coffee')
 
-# Read in multiple files as individuals
-txtFiles <- list.files(pattern = 'chardonnay|coffee')
-
+# Read in the files
 for (i in 1:length(txtFiles)){
-  assign(txtFiles[i], read.csv(txtFiles[i]))
+  assign(topicNames[i], read.csv(txtFiles[i]))
   cat(paste('read completed:',txtFiles[i],'\n'))
 }
 
 # Vector Corpus; omit the meta data
-chardonnay <- VCorpus(VectorSource(chardonnay.csv$text))
-coffee     <- VCorpus(VectorSource(coffee.csv$text))
+chardonnay <- VCorpus(VectorSource(chardonnay$text))
+coffee     <- VCorpus(VectorSource(coffee$text))
 
 # Clean up the data
 chardonnay <- cleanCorpus(chardonnay, stops)
@@ -84,12 +86,12 @@ drinkTDM  <- TermDocumentMatrix(allDrinks)
 drinkTDMm <- as.matrix(drinkTDM)
 
 # Make sure order is correct!
-colnames(drinkTDMm) <- c('chardonnay', 'coffee')
+colnames(drinkTDMm) <- topicNames
 
 # Examine
 head(drinkTDMm)
 
-
+# Plot the frequent & in common terms
 commonality.cloud(drinkTDMm, 
                   max.words=150, 
                   random.order=FALSE,

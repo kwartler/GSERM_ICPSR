@@ -1,2 +1,7 @@
 To Do
 1. Start on day 2.
+2. Clean up the data folders in all lessons
+
+3. Remove qdap?!but keep qdapRegex
+4. update package install on the readme
+5. email the class

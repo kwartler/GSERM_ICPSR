@@ -1,13 +1,11 @@
-#' Title: Frequency and Associations
-#' Purpose: Obtain term frequency and explore associations
+#' Purpose: Frequency and Associations
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
-#' Date: June 13, 2022
+#' Date: May 28, 2023
 #'
 
-# Set the working directory
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/B_Basic_Visuals/data")
+# Declare the data path
+filePath  <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/B_Basic_Visuals/data/BritishAirways.csv'
 
 # Libs
 library(tm)
@@ -29,7 +27,6 @@ tryTolower <- function(x){
 
 cleanCorpus<-function(corpus, customStopwords){
   corpus <- tm_map(corpus, content_transformer(qdapRegex::rm_url))
-  #corpus <- tm_map(corpus, content_transformer(replace_contraction)) 
   corpus <- tm_map(corpus, removeNumbers)
   corpus <- tm_map(corpus, removePunctuation)
   corpus <- tm_map(corpus, stripWhitespace)
@@ -43,7 +40,7 @@ stops <- c(stopwords('SMART'), 'amp', 'britishairways', 'british',
                      'flight', 'flights', 'airways')
 
 # Read in Data, clean & organize
-text      <- read.csv('BritishAirways.csv')
+text      <- read.csv(filePath)
 txtCorpus <- VCorpus(VectorSource(text$text))
 txtCorpus <- cleanCorpus(txtCorpus, stops)
 tweetTDM  <- TermDocumentMatrix(txtCorpus)
