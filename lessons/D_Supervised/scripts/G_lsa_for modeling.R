@@ -1,12 +1,11 @@
-#' Title: LSA for Modeling
 #' Purpose: use LSA to reduce dimensions and create a model
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
 #' License: GPL>=3
-#' Date: June 16 2021
+#' Date: May 28, 2023
 
-# Set the working directory
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/D_Supervised/data/AutoAndElectronics")
+# Data Folder
+list.dirs(path = '~/Desktop/GSERM_ICPSR/lessons/D_Supervised/data/AutoAndElectronics')
 
 # Libs
 library(tm)
