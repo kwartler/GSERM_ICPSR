@@ -12,7 +12,6 @@ library(tm)
 filePath <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/A_Setup_Intro_Basics/data/coffeeVector.csv'
 
 # Options & Functions
-options(stringsAsFactors = FALSE)
 Sys.setlocale('LC_ALL','C')
 
 tryTolower <- function(x){

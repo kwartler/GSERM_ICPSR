@@ -40,7 +40,6 @@ docAssignment<-function(x){
 }
 
 # Options & Functions
-options(stringsAsFactors = FALSE)
 Sys.setlocale('LC_ALL','C')
 
 # Stopwords

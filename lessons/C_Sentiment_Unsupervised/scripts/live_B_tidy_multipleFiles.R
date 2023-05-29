@@ -18,9 +18,6 @@ library(radarchart)
 library(textdata)
 library(ggplot2)
 
-# Options & Functions
-options(stringsAsFactors = FALSE)
-
 # Custom Functions
 tryTolower <- function(x){
   y = NA

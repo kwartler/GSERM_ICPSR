@@ -11,7 +11,6 @@ filePath <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons
 library(tm)
 
 # Options & Functions
-options(stringsAsFactors = FALSE)
 Sys.setlocale('LC_ALL','C')
 
 tryTolower <- function(x){

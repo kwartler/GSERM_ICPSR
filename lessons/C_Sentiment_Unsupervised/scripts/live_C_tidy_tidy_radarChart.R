@@ -15,7 +15,6 @@ library(dplyr)
 library(textdata)
 
 # Options & Functions
-options(stringsAsFactors = FALSE)
 Sys.setlocale('LC_ALL','C')
 
 tryTolower <- function(x){

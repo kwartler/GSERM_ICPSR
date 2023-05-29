@@ -15,7 +15,6 @@ library(RColorBrewer)
 library(echarts4r)
 
 # Options & Functions
-options(stringsAsFactors = FALSE)
 Sys.setlocale('LC_ALL','C')
 
 tryTolower <- function(x){

@@ -17,7 +17,6 @@ library(ggplot2)
 library(ggthemes)
 
 # Options & Functions
-options(stringsAsFactors = FALSE)
 Sys.setlocale('LC_ALL','C')
 
 # Lowercase

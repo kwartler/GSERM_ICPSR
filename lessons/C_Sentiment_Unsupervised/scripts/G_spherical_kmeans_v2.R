@@ -36,7 +36,6 @@ cleanCorpus<-function(corpus, customStopwords){
 }
 
 # Options & Functions
-options(stringsAsFactors = FALSE)
 Sys.setlocale('LC_ALL','C')
 
 # Stopwords

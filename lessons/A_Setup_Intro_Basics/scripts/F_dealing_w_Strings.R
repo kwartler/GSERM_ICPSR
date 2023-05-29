@@ -11,7 +11,6 @@ filePath <- 'https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons
 library(stringi)
 
 # Options & Functions
-options(stringsAsFactors = FALSE) #text strings will not be factors of categories
 Sys.setlocale('LC_ALL','C') #some tweets are in different languages so you may get an error
 
 # Get Data

@@ -14,7 +14,6 @@ library(________)
 library(________)
 
 # Options & Functions; just leave it alone :)
-options(stringsAsFactors = FALSE)
 Sys.setlocale('LC_ALL','C')
 
 # load the homework data, beer.csv, in an object called `text`
