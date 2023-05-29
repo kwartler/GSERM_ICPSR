@@ -3,11 +3,6 @@
 #' Purpose: Biased Modeling Example
 #'Megacorp is a hypothetical large and successful corporation that makes modern high-tech products. Whenever Megacorp advertises new job vacancies, their human resources team are overwhelmed by the many people who apply for a role. They want an automated process to filter through the resumes, to give them a short list of applicants who match best. Megacorp has a database containing the resumes and hiring results of applicants from the past few years. They track variables like age, gender, education and other details around the job applicant’s profile, and they want to use the text from the resume, including participation in extracurricular activities.
 
-# Set WD
-setwd("~/Desktop/Hult_Visualizing-Analyzing-Data-with-R/personalFiles")
-options(scipen = 999)
-
-
 # Libs
 library(text2vec)
 library(caret)
@@ -27,7 +22,7 @@ resumeClean<-function(xVec, stops=stopwords("SMART")){
 }
 
 # Data
-candidates <- read.csv('https://raw.githubusercontent.com/kwartler/Hult_Visualizing-Analyzing-Data-with-R/main/DD1/H_Mar21/data/HR%20Hiring%20(Bias%20%26%20Fairness).csv')
+candidates <- read.csv('https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/E_SyntacticParsing_DataSources/data/HR%20Hiring%20(Bias%20%26%20Fairness).csv')
 
 ### SAMPLE : Partitioning
 set.seed(1234)
@@ -76,10 +71,10 @@ allCandidateData <- allCandidateData[, !(names(allCandidateData) %in% drops)]
 #                          names(allCandidateData), #x-var columns
 #                          'Hired', # y-var name
 #                          'Yes') #success factor level
-#saveRDS(plan, 'variable_treatment_plan.rds')
+#saveRDS(plan, '~/Desktop/GSERM_ICPSR/lessons/E_SyntacticParsing_DataSources/data/variable_treatment_plan.rds')
 
 #update for your path if you don't build it above!
-pth <- '~/Desktop/Hult_Visualizing-Analyzing-Data-with-R/DD1/H_Mar21/data/variable_treatment_plan.rds'
+pth <- '~/Desktop/GSERM_ICPSR/lessons/E_SyntacticParsing_DataSources/data/variable_treatment_plan.rds'
 plan <- readRDS(pth)
 allCandidateData <- prepare(plan, allCandidateData)
 
@@ -95,7 +90,7 @@ candidateFit <- cv.glmnet(as.matrix(allCandidateData),
                           type.measure = 'auc',
                           nfolds       = 3,
                           intercept    = F)
-#saveRDS(candidateFit, 'candidateFit.rds')
+#saveRDS(candidateFit, '~/Desktop/GSERM_ICPSR/lessons/E_SyntacticParsing_DataSources/data/candidateFit.rds')
 
 ### ASSESS
 # Get Predictions on the training set from all 3 models
