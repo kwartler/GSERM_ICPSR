@@ -1,10 +1,7 @@
 To Do
 1. Clean up the data folders in all lessons
 2. go back to day 3
-3. Remove qdap?!but keep qdapRegex
 4. update package install on the readme
 5. email the class
-6. Add a live code to Weds?
-7. Add a live code for Thursday from https://cran.r-project.org/web/packages/finreportr/finreportr.pdf
-8. Day 5 change to GPT, syntatctic parsing, google APIs, ethics, openNLP, APIs, rm(webscraping)
+7. Add a live code for Thursday
 9. GSERM admin emails

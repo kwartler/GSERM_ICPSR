@@ -1,13 +1,11 @@
-#' Title: Sentiment Analysis
 #' Purpose: Inner join sentiment lexicons to text
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
 #' Date: June 15, 2021
 #'
 
 # Wd
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/C_Sentiment_Unsupervised/data")
+setwd("~/Desktop/GSERM_ICPSR/personalFiles")
 
 # Libs
 library(tm)
@@ -19,28 +17,44 @@ library(radarchart)
 library(tidyr)
 
 # Bring in our supporting functions
-source('~/Desktop/GSERM_Text_Remote_student/student_lessons/Z_otherScripts/ZZZ_supportingFunctions.R')
+tryTolower <- function(x){
+  y = NA
+  try_error = tryCatch(tolower(x), error = function(e) e)
+  if (!inherits(try_error, 'error'))
+    y = tolower(x)
+  return(y)
+}
+
+cleanCorpus<-function(corpus, customStopwords){
+  corpus <- tm_map(corpus, content_transformer(qdapRegex::rm_url)) 
+  corpus <- tm_map(corpus, removePunctuation)
+  corpus <- tm_map(corpus, stripWhitespace)
+  corpus <- tm_map(corpus, removeNumbers)
+  corpus <- tm_map(corpus, content_transformer(tryTolower))
+  corpus <- tm_map(corpus, removeWords, customStopwords)
+  return(corpus)
+}
 
 # Create custom stop words
 stops <- c(stopwords('english'))
 
 # Clean and Organize
-txtDTM <- cleanMatrix('Weeknd.csv',
-                      'text',
-                      collapse        = F, 
-                      customStopwords = stops, 
-                      type            = 'DTM', 
-                      wgt             = 'weightTf')
+txt <- read.csv('https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/C_Sentiment_Unsupervised/data/Weeknd.csv')
+# Make a volatile corpus
+txtCorpus <- VCorpus(VectorSource(txt$text))
+
+# Preprocess the corpus
+txtCorpus <- cleanCorpus(txtCorpus, stops)
+
+# Make a DTM & convert for simplicity
+txtDTM <- DocumentTermMatrix(txtCorpus)
 
 # Examine original & Compare
-txtDTM[,1:10]
-dim(txtDTM)
+as.matrix(txtDTM)[,1:10]
+dim(as.matrix(txtDTM))
 
 # Examine Tidy & Compare
-# switch back to DTM because the function I wrote returns a matrix!!
-# you can avoid this by not using the cleanMatrix function and instead coding it with cleanCorpus etc.
-tmp      <- as.DocumentTermMatrix(txtDTM, weighting = weightTf ) 
-tidyCorp <- tidy(tmp)
+tidyCorp <- tidy(txtDTM)
 tidyCorp
 dim(tidyCorp)
 
@@ -57,7 +71,7 @@ bingSent
 aggregate(count~sentiment,bingSent, sum)
 
 # Compare original with qdap::Polarity
-polarity(read.csv('Weeknd.csv')$text)
+polarity(txt$text)
 # avg. polarity  -0.409
 
 # Get afinn lexicon
@@ -69,7 +83,7 @@ afinnSent <- inner_join(tidyCorp,afinn, by=c('term' = 'word'))
 afinnSent
 
 # Quick Analysis
-weeknd <- read.csv('Weeknd.csv')$text
+weeknd <- txt$text
 weekndWords <- data.frame(word = unlist(strsplit(weeknd,' ')))
 weekndWords$word <- tolower(weekndWords$word )
 weekndWords <- left_join(weekndWords,afinn, by=c('word' = 'word'))
