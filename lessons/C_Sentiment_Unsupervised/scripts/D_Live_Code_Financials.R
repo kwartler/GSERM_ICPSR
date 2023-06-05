@@ -12,7 +12,7 @@ setwd("~/Desktop/GSERM_ICPSR/personalFiles")
 
 # Two data sets
 transcriptNVDIA <- 'https://seekingalpha.com/article/4607199-nvidia-corp-nvda-q1-2024-earnings-call-transcript'
-pgNvidia <- read_html(transcript) %>% 
+pgNvidia <- read_html(transcriptNVDIA) %>% 
   html_nodes(xpath = '/html/body/div[2]/div/div[1]/div/main/div/div[2]/div/article/div/div/div[1]/div/section[1]/div/div/div/div[3]/div/div/div[1]') %>%
   html_text()
 #writeLines(pgNvidia, 'transcriptNVDIA.txt')

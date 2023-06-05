@@ -69,7 +69,14 @@ allTDM
 ##### Takes awhile, may crash small RAM computers, so saved a copy
 #lsaTDM <- lsa(allTDM, 20)
 #saveRDS(lsaTDM, paste0(savePath, Sys.Date(),'_lsaTDM_tfidf_.rds'))#be sure to declare the right wd!
-lsaTDM <- readRDS(paste0(savePath, Sys.Date(),'_lsaTDM_tfidf_.rds'))
+lsaTDM <- readRDS(paste0(savePath, '2023-05-28_lsaTDM_tfidf_.rds'))
+
+### If you have new data/docs and have a model built using the original lsa() you need to treat the new values like this:
+# Transform new, unseen data into the lower-dimensional LSA space
+# testDTM <- create.matrix(c("This is a bird for document 1.", "I am an alien for document 2."), type = "content")
+# test_lsa <- testDTM %*% lsaTDM$tk
+###
+
 
 # Extract the document LSA values
 docVectors <- as.data.frame(lsaTDM$dk)

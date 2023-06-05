@@ -1,7 +1,5 @@
 To Do
 1. Clean up the data folders in all lessons
-2. go back to day 3
 4. update package install on the readme
 5. email the class
-7. Add a live code for Thursday
 9. GSERM admin emails
