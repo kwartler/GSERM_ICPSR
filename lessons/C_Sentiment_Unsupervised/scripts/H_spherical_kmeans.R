@@ -35,7 +35,7 @@ cleanCorpus<-function(corpus, customStopwords){
 }
 
 # Stopwords
-stops  <- c(stopwords('SMART'), 'jeopardy')
+stops  <- c(stopwords('SMART'), 'news')
 
 # Read & Preprocess
 txt <- read.csv('https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/C_Sentiment_Unsupervised/data/exampleNews.csv')

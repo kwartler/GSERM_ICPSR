@@ -9,6 +9,7 @@
 
 # HW Tasks:
 # 1. Apply 1 sentiment lexicon or polarity analysis to news.csv data.
+txt <- read.csv('https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/C_Sentiment_Unsupervised/HW/news.csv')
 # 2. Perform 1 clustering method with the news.csv data. 
 # Considerations:  
 # - The title, description and content columns are all ok to use as well as the combined title_description_content column.  

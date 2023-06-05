@@ -1,15 +1,12 @@
-#' Title: Emotional Context & Clustering for Topics
 #' Purpose: Apply NRC to get news source sentiment & cluster to get news topics
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
-#' License: GPL>=3
 #' Date: June 15, 2021
 
 # wd
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/C_Sentiment_Unsupervised/data")
+setwd("~/Desktop/GSERM_ICPSR/personalFiles")
 
 # options
-options(scipen = 999, stringsAsFactors = F)
 Sys.setlocale("LC_CTYPE", "en_US.UTF-8") # this is unicode text
 
 # Libs
@@ -26,11 +23,29 @@ library(radarchart)
 library(ggplot2)
 library(ggthemes)
 
-# Custom Functions
-source('~/Desktop/GSERM_Text_Remote_student/student_lessons/Z_otherScripts/ZZZ_supportingFunctions.R')
+# Bring in our supporting functions
+tryTolower <- function(x){
+  y = NA
+  try_error = tryCatch(tolower(x), error = function(e) e)
+  if (!inherits(try_error, 'error'))
+    y = tolower(x)
+  return(y)
+}
+
+cleanCorpus<-function(corpus, customStopwords){
+  corpus <- tm_map(corpus, content_transformer(qdapRegex::rm_url))
+  corpus <- tm_map(corpus, removeNumbers)
+  corpus <- tm_map(corpus, removePunctuation)
+  corpus <- tm_map(corpus, stripWhitespace)
+  corpus <- tm_map(corpus, content_transformer(tryTolower))
+  corpus <- tm_map(corpus, removeWords, customStopwords)
+  return(corpus)
+}
 
 # Examine Raw Text
-rawTxt <- read.csv('exampleNews.csv')
+rawTxt <- read.csv('https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/C_Sentiment_Unsupervised/data/exampleNews.csv')
+
+# Examine the meta
 t(rawTxt[1,])
 
 # Organize into a DF for TM
@@ -46,8 +61,6 @@ stops  <- c(stopwords('SMART'),'chars') # API truncation "[+3394 chars]"
 # Process
 allInfo    <- VCorpus(DataframeSource(allInfo))
 allInfo    <- cleanCorpus(allInfo, stops) 
-#saveRDS(allInfo, 'allInfo.rds')
-allInfo    <- readRDS('allInfo.rds')
 allInfoDTM <-  DocumentTermMatrix(allInfo)
 allInfoDTM <- as.matrix(allInfoDTM)
 allInfoDTM <- subset(allInfoDTM, rowSums(allInfoDTM) > 0)
@@ -71,7 +84,8 @@ colnames(protoTypical) <- paste0('cluster_',1:ncol(protoTypical))
 head(protoTypical)
 
 
-pdf(file = "news_cluster_topics.pdf", 
+# Make a comparison cloud of word clusters
+pdf(file = "~/Desktop/GSERM_ICPSR/personalFiles/news_cluster_topics.pdf", 
     width  = 6, 
     height = 6) 
 comparison.cloud(protoTypical, title.size=1.1, scale=c(1,.5))
@@ -82,7 +96,8 @@ tidyCorp <- tidy(DocumentTermMatrix(allInfo))
 tidyCorp
 
 # Let's understand the meta data of new source
-(sourceID <- unique(meta(allInfo)))
+sourceID <- unique(meta(allInfo))
+sourceID
 
 # Cut documents into the 5 sources
 seq(0,500,100) 
@@ -90,14 +105,14 @@ tidyCorp <- as.data.frame(tidyCorp)
 tidyCorp$source <- cut(as.numeric(tidyCorp$document), 
                        breaks = seq(0,500,100), 
                        labels = sourceID[,1])
-tidyCorp[2944:2948,]
+head(tidyCorp[grep('msnbc',tidyCorp$source)-2,])
 
 # Previously we reshaped the NRC now we just load it
 nrc <- read.csv('tidy_nrcLex.csv')
 
 # Perform the inner join
 nrcSent <- inner_join(tidyCorp,
-                      nrc, by=c('term' = 'term'))
+                      nrc, by=c('term' = 'term'), relationship = "many-to-many")
 head(nrcSent)
 
 # Adjust for quick analysis
@@ -105,8 +120,11 @@ table(nrcSent$sentiment, nrcSent$source)
 emos <- as.data.frame.matrix(table(nrcSent$sentiment,nrcSent$source))
 emos
 
-# Make a radarChart
-chartJSRadar(scores = emos, 
+# as a proportion of the channel's effort
+prop.table(as.matrix(emos), margin = 2)
+
+# Make a radarChart; more disgust in brietbart, more anger in washignton post
+chartJSRadar(scores = as.data.frame(prop.table(as.matrix(emos), margin = 2)), 
              labs = rownames(emos),
              labelSize = 10, showLegend = F)
              
@@ -116,6 +134,8 @@ clusterProp <- table(data.frame(txtSKMeans$cluster,
                        breaks = seq(0,500,100), 
                        labels = sourceID[,1])))
 clusterProp <- prop.table(clusterProp, margin = 1)
+
+# Cluster is row, proportion of the cluster from the source (row wise)
 clusterProp
 
 # Intersect the Clusters and Sentiment; join the clusters
@@ -127,6 +147,9 @@ combinedData <- left_join(nrcSent,
                           docCluster, 
                           by = c("document" = "document"))
 
+# Bring it all together, doc 1 has x sentiment and was assigned to cluster one, and is from the washignton post
+head(combinedData)
+
 # Intersect the Clusters and Sentiment; subset to the cluster of interest
 oneTopic <- subset(combinedData, combinedData$clusterAssignment == 1)
 
@@ -135,24 +158,32 @@ table(oneTopic$sentiment, oneTopic$source)
 oneEmo <- as.data.frame.matrix(table(oneTopic$sentiment, oneTopic$source))
 oneEmo
 
-# Make a radarChart
+# Make a radarChart, in cluster 1, the majority of sadness words came from brietbart news
 chartJSRadar(scores = oneEmo, 
              labs = rownames(oneEmo),
              labelSize = 10, showLegend = F)
              
 # Intersect the Clusters and Sentiment; subset to one source
+# Revisit the combined data
 head(combinedData)
-singleSourceID <- sourceID[1,1]#"1,1the-washington-post" 3,1 Fox
-oneSource <- subset(combinedData, combinedData$source== singleSourceID) 
+
+# Subset to a single source
+oneSource <- subset(combinedData, combinedData$source== 'the-washington-post') 
+
+# Sum count the words by sentiment emotion and cluster assignment
 oneSource <- aggregate(count~sentiment+clusterAssignment, oneSource, sum)
 oneSource
 
-# Intersect the Clusters and Sentiment; plot the results, recoding the topics 1-4 to the most frequent words like "trump" etc
-levelKey <- rownames(protoTypical)[apply(protoTypical,2,which.max)]
-names(levelKey) <- c("1","2","3","4")
-oneSource$clusterAssignment <- recode(
-  as.character(oneSource$clusterAssignment), 
-  !!!levelKey)
+# Recode the topics from 1-4 to the most frequent words in each cluster like "trump" etc
+levelKey <- rownames(protoTypical)[apply(protoTypical,2,which.max)] # Get the max words in each cluster
+names(levelKey) <- c("1","2","3","4") # Assign the corresponding 1-4; just done in order 
+levelKey
+
+# Now apply the recode; !!! "unquotes" the inputs and uses the raw values so "1" or "4" are passed directly as 1, 4 etc.
+oneSource$clusterAssignment <- recode(as.character(oneSource$clusterAssignment), !!!levelKey)
+
+# Examine the work
+head(oneSource)
 
 # Now plot a single source, x-axis is the emotion, y-axis is the top term for each cluster, dot size and alpha is emotional term frequency
 ggplot(oneSource, 
