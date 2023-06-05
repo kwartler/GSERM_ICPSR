@@ -5,7 +5,7 @@
 #'
 
 # Set the working directory
-setwd("~/Desktop/Hult_Visualizing-Analyzing-Data-with-R/personalFiles")
+setwd("~/Desktop/GSERM_ICPSR/personalFiles")
 
 # Libs
 library(tidytext)

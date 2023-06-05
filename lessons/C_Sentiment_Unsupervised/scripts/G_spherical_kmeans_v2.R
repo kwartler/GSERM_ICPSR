@@ -1,12 +1,11 @@
-#' Title: Spherical K Means
 #' Purpose: apply cosine similarity kmeans clustering
 #' Author: Ted Kwartler
 #' email: edwardkwartler@fas.harvard.edu
 #' License: GPL>=3
-#' Date: Jan 18 2022
+#' Date: June 5, 2023
 
 # Wd
-setwd("~/Desktop/GSERM_Text_Remote_student/student_lessons/C_Sentiment_Unsupervised/data")
+setwd("~/Desktop/GSERM_ICPSR/personalFiles")
 
 # Libs
 library(skmeans)
@@ -35,16 +34,11 @@ cleanCorpus<-function(corpus, customStopwords){
   return(corpus)
 }
 
-# Options & Functions
-Sys.setlocale('LC_ALL','C')
-
 # Stopwords
 stops  <- c(stopwords('SMART'), 'jeopardy')
 
 # Read & Preprocess
-#txt <- read_fst('jeopardyArchive_1000.fst')
-#txtVec <- txt$clue
-txt <- read.csv('exampleNews.csv')
+txt <- read.csv('https://raw.githubusercontent.com/kwartler/GSERM_ICPSR/main/lessons/C_Sentiment_Unsupervised/data/exampleNews.csv')
 txtVec <- paste(txt$title, 
                 txt$description, 
                 txt$content)
@@ -53,7 +47,7 @@ txt <- cleanCorpus(txt, stops)
 txtDTM <- DocumentTermMatrix(txt, control = list(weighting = 'weightTfIdf'))
 txtMat <- as.matrix(txtDTM)
 
-# Remove empty docs w/TF-Idf
+# Remove any empty docs w/TF-Idf
 txtMat <- subset(txtMat, rowSums(txtMat) > 0)
 
 # Apply Spherical K-Means
@@ -75,7 +69,7 @@ colnames(protoTypical) <- paste0('cluster_',1:ncol(protoTypical))
 protoTypical[99:101,]
 
 # To improve the aesthetics save directly to disk
-pdf(file = "news_cluster_topics.pdf", 
+pdf(file = "~/Desktop/GSERM_ICPSR/personalFiles/exampleNews_cluster_topics.pdf", 
     width  = 6, 
     height = 6) 
 comparison.cloud(protoTypical, title.size=1.1, scale=c(1,.5))
