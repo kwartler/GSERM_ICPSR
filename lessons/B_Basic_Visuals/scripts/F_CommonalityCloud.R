@@ -19,7 +19,6 @@ library(tm)
 library(qdap)
 library(wordcloud)
 library(RColorBrewer)
-library(pbapply)
 
 # Options & Functions
 Sys.setlocale('LC_ALL','C')
@@ -60,8 +59,8 @@ chardonnay <- cleanCorpus(chardonnay, stops)
 coffee     <- cleanCorpus(coffee, stops)
 
 # Another way to extract the cleaned text 
-chardonnay <- unlist(pblapply(chardonnay, content))
-coffee     <- unlist(pblapply(coffee, content))
+chardonnay <- unlist(lapply(chardonnay, content))
+coffee     <- unlist(lapply(coffee, content))
 
 # FYI
 length(chardonnay)

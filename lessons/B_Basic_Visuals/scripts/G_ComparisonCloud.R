@@ -20,7 +20,6 @@ library(tm)
 library(qdap)
 library(wordcloud)
 library(RColorBrewer)
-library(pbapply)
 
 # Options & Functions
 Sys.setlocale('LC_ALL','C')
@@ -62,8 +61,8 @@ coffee       <- cleanCorpus(coffee, stops)
 chardonnay <- cleanCorpus(chardonnay, stops)
 
 # Another way to extract the cleaned text 
-coffee       <- unlist(pblapply(coffee, content))
-chardonnay <- unlist(pblapply(chardonnay, content))
+coffee       <- unlist(lapply(coffee, content))
+chardonnay <- unlist(lapply(chardonnay, content))
 
 # Instead of 1000 individual documents, collapse each into a single "subject" ie a single document
 coffee       <- paste(coffee, collapse = ' ')

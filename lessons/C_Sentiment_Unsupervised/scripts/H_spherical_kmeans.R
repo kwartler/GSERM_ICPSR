@@ -13,7 +13,6 @@ library(tm)
 library(clue)
 library(cluster)
 library(wordcloud)
-library(fst)
 
 # Bring in our supporting functions
 tryTolower <- function(x){
