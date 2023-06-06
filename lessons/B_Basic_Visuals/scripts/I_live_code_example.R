@@ -3,10 +3,13 @@
 # purpose: live code a text mining project
 
 # Choices
-# '2020-12-18_dellForum_k1_k5540.fst'
-# "20K_sampleLoans.csv"
+# What are people complaining about?
+# '2020-12-18_dellForum_k1_k5540.fst' #requires the FST package to load
+# What are people talking about at a moment in time when mentioning beer? 
 # "beer.csv"  
+# Any differences among carrefour and tesco mentions?
 # Compare: "carrefour.csv" "tesco.csv"
+# What words are used to describe 130k wines, can be done by country, region, points or price
 # *large-ish* data: "winemag-data-130k-v2.csv" 
 
 # Data Path
