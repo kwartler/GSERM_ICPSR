@@ -1,5 +1,2 @@
 To Do
-1. Clean up the data folders in all lessons
-4. update package install on the readme
-5. email the class
 9. GSERM admin emails
