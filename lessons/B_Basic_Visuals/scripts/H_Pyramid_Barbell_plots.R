@@ -82,6 +82,10 @@ pyramid.plot(lx         = top35$britishAir, #left
              unit       = 'wordFreq') 
 
 # ggplot interface
+# ggplot needs a defined "character class"
+class(top35$terms) #inherited from "merge()"
+top35$terms <- as.character(top35$terms)
+
 ggplot(top35, aes(x = terms)) +
   geom_bar(aes(y = britishAir, fill = "British Airways"), stat = "identity", width = 0.8) +
   geom_bar(aes(y = -ryanAir, fill = "RyanAir"), stat = "identity", width = 0.8) +
@@ -103,7 +107,5 @@ ggplot(top35, aes(x = terms)) +
   labs(x = "", y = "") +
   theme(axis.text.y=element_blank()) +
   ggtitle('Comparing BritishAir to RyanAir')
-
-
 
 # End

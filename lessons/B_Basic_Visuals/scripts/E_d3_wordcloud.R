@@ -13,6 +13,7 @@ library(qdap)
 library(wordcloud2)
 library(RColorBrewer)
 library(echarts4r)
+library(dplyr)
 
 # Options & Functions
 Sys.setlocale('LC_ALL','C')

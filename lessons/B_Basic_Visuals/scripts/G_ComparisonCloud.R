@@ -80,7 +80,7 @@ drinkTDM  <- TermDocumentMatrix(allDrinks, control = ctrl)
 drinkTDMm <- as.matrix(drinkTDM)
 
 # Make sure order is the same as the c(objA, objB) on line ~80
-colnames(drinkTDMm) <- topicNames
+colnames(drinkTDMm) <- c('coffee', 'chardonnay')
 
 # Examine
 head(drinkTDMm)
