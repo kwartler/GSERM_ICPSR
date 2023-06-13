@@ -86,20 +86,27 @@ pyramid.plot(lx         = top35$britishAir, #left
 class(top35$terms) #inherited from "merge()"
 top35$terms <- as.character(top35$terms)
 
-ggplot(top35, aes(x = terms)) +
-  geom_bar(aes(y = britishAir, fill = "British Airways"), stat = "identity", width = 0.8) +
-  geom_bar(aes(y = -ryanAir, fill = "RyanAir"), stat = "identity", width = 0.8) +
+p <- ggplot(top35, aes(x = terms)) +
+  geom_bar(aes(y = britishAir, fill = "British Airways"), 
+           stat = "identity", width = 0.8) +
+  geom_bar(aes(y = -ryanAir, fill = "RyanAir"), 
+           stat = "identity", width = 0.8) +
   coord_flip() +
   scale_fill_manual(values = c("blue", "red"), name = "") +
   theme_minimal() +
   theme(legend.position = "bottom") +
   labs(x = "", y = "")
+p
 
 # Change the aesthetics
-ggplot(top35, aes(x = terms)) +
-  geom_bar(aes(y = britishAir, fill = "British Airways"), stat = "identity", width = 0.8, alpha = 0.5) +
-  geom_bar(aes(y = -ryanAir, fill = "RyanAir"), stat = "identity", width = 0.8, alpha = 0.5) +
-  geom_text(aes(y = 0, label = terms), size = 3, nudge_y=0, color = 'black') +
+p2 <- ggplot(top35, aes(x = terms)) +
+  geom_bar(aes(y = britishAir, fill = "British Airways"), 
+           stat = "identity", width = 0.4, alpha = 0.5) +
+  geom_bar(aes(y = -ryanAir, fill = "RyanAir"), 
+           stat = "identity", width = 0.4, alpha = 0.5) +
+  geom_point(data = top35, aes(y = britishAir), color = 'blue', alpha = 0.75) +
+  geom_point(data = top35, aes(y = -ryanAir), color = 'red', alpha = .75) +
+  geom_text(aes(y = 0, label = terms), size = 3, nudge_y=0, color = 'black', fontface='bold') +
   coord_flip() +
   scale_fill_manual(values = c("blue", "red"), name = "") +
   theme_minimal() +
@@ -107,5 +114,9 @@ ggplot(top35, aes(x = terms)) +
   labs(x = "", y = "") +
   theme(axis.text.y=element_blank()) +
   ggtitle('Comparing BritishAir to RyanAir')
+p2
+
+
+
 
 # End
