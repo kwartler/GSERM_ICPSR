@@ -116,7 +116,4 @@ p2 <- ggplot(top35, aes(x = terms)) +
   ggtitle('Comparing BritishAir to RyanAir')
 p2
 
-
-
-
 # End
