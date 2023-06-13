@@ -83,6 +83,15 @@ wordcloud(wineDF$word,
           colors       = pal,
           scale        = c(2,1))
 
+pdf('~/Desktop/GSERM_ICPSR/personalFiles/exampleWC.pdf')
+wordcloud(wineDF$word,
+          wineDF$freq,
+          max.words    = 50,
+          random.order = FALSE,
+          colors       = pal,
+          scale        = c(2,1))
+dev.off()
+
 # More common ggplot interface, Single Color
 ggplot(plotDF, aes(label = word, size = freq, color = 'red')) +
   geom_text_wordcloud() +
