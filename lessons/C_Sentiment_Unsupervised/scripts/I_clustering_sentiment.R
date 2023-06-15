@@ -108,7 +108,7 @@ tidyCorp$source <- cut(as.numeric(tidyCorp$document),
 head(tidyCorp[grep('msnbc',tidyCorp$source)-2,])
 
 # Previously we reshaped the NRC now we just load it
-nrc <- read.csv('tidy_nrcLex.csv')
+nrc <- read.csv('~/Desktop/GSERM_ICPSR/lessons/C_Sentiment_Unsupervised/data/tidy_nrcLex.csv')
 
 # Perform the inner join
 nrcSent <- inner_join(tidyCorp,
@@ -190,7 +190,7 @@ ggplot(oneSource,
        aes(sentiment, as.factor(clusterAssignment), 
                       size = count, alpha = count)) +
   geom_point() +
-  ggtitle(singleSourceID, 
+  ggtitle('the-washington-post', 
           sub = "Emotion by Topic Cluster") + 
   ylab("") +
   theme_tufte()
